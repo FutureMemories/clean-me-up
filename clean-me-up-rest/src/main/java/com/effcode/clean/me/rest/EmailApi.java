@@ -15,7 +15,7 @@ public class EmailApi {
 
     @RequestMapping("/")
     public ResponseEntity<Void> send(@RequestParam String adr, @RequestParam String subject,
-            @RequestParam String content) {
+                                     @RequestParam String content) {
         boolean state = emailHandler.send(adr, subject, content);
         if (state) {
             return new ResponseEntity<Void>(HttpStatus.OK);
