@@ -1,28 +1,35 @@
 package com.effcode.clean.me.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 @Controller
+@Validated
 public class EmailApi {
+    public static final int MAX_CONTENT_LENGTH = 65000;
+    public static final int MIN_CONTENT_LENGTH = 0;
 
-    @Autowired
-    EmailHandler emailHandler;
+    private final EmailHandler emailHandler;
 
-    @PostMapping("/")
-    public ResponseEntity<Void> send(@RequestParam String adr, @RequestParam String subject,
-                                     @RequestParam String content) {
-        boolean state = emailHandler.send(adr, subject, content);
-        if (state) {
-            return new ResponseEntity<Void>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
-        }
+    public EmailApi(EmailHandler emailHandler) {
+        this.emailHandler = emailHandler;
     }
 
+    @PostMapping("/")
+    public ResponseEntity<Void> send(
+            @RequestParam(name = "adr") @NotNull @Email String emailAddress,
+            @RequestParam @NotBlank String subject,
+            @RequestParam @NotNull @Size(min = MIN_CONTENT_LENGTH, max = MAX_CONTENT_LENGTH) String content) {
+        emailHandler.send(emailAddress, subject, content);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
