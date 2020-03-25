@@ -9,12 +9,12 @@ import org.springframework.core.env.Environment;
 
 @SpringBootApplication
 public class CleanMeRestApplication {
+    @Autowired
+    private Environment env;
 
     public static void main(String[] args) {
         SpringApplication.run(CleanMeRestApplication.class, args);
     }
-    @Autowired
-    private Environment env;
 
     @Bean
     public SmtpHandler smtpHandler() {
