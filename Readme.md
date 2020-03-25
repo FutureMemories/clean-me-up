@@ -1,30 +1,24 @@
 ## Clean-me-up
 
-### Preconditions
-* The application exposes a public REST end-point for sending emails
-* The application acts like a facade towards a legacy email library located in module **clean-me-up-support**
-* The current implementation is rather ugly
-* The API contract has not yet been published so you don't need to be backwards compatible
-* Application is located in module **clean-me-up-rest**
-* Don't change the legacy module **clean-me-up-support**
+### Changelog
 
-### Assignment
-* Refactor the code in module **clean-me-up-rest** as you wish
-* When you are done you should be rather happy with the code when it comes to: maintenance, quality, structure, architecture, testing, validation etc
-* If you left things behind - please note that down in a read-me file
+* EmailApi (Controller):
+    * Added validation.
+    * Now only accepts POST-requests, changed from accepting any type of HTTP-method.
+    * Added basic test.
+* EmailHandler:
+    * Interface extracted and implementation renamed to EmailHandlerImpl.
+    * Username and passwords are now configured through application.properties.
+    * Validation and return value removed: This is a bit contentious but my reasoning was that the input data was validated at the controller layer anyhow, and I wanted to simplify the code.
+    * Logging removed. Was leaking sensitive data.
+* Configuration:
+* Misc:
+    * Added custom exception handler to turn validation errors into 400: Bad Request-responses rather than
+the default 500: Internal Server Error-responses Spring wanted to use.
 
-Estimated time ~4 hours, but feel free to impress us. 
 
-### Stretch goals
-When implementing a service - there are lots of things to consider. Some of those are:
-* DevOps
-* Security
-* Documentation
-* Versioning
-* Monitoring
-* Logging
-* CI / CD
-* Configuration
-* Data integrity
-* Fault handling
 
+### Stuff I wish I had time to fix
+* Spring always responds with application/json when a required parameter is missing completely. I was hoping to have this return text/plain just like the actual parameter validators, but for some reason the custom error handler does not seem to apply here.
+* More tests. The validation is covered by a basic unit-test but it would be nice to have more tests.
+* I decided to NOT test the EmailHandlerImpl as it's now only a thin wrapper around SmtpHandler, but if I was to add back some validation logic to it I would have it return an instance of a custom error type. 
